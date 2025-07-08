@@ -39,7 +39,7 @@ find ~/.local/share/ulauncher/extensions/ -name requirements.txt
 ```
 O caminho retornado será algo como:
 ```bash
-~/.local/share/ulauncher/extensions/com.github.seu-usuario.2fa-ulauncher-ext/equirements.txt
+~/.local/share/ulauncher/extensions/com.github.silvan-batistella.2fa-ulauncher-ext/requirements.txt
 ```
 2.2. Instale os pacotes Python:
 ```bash
