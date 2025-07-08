@@ -1,0 +1,32 @@
+{
+  "required_api_version": "^2.0.0",
+  "name": "2FA",
+  "description": "Extensão de Autenticação 2FA",
+  "developer_name": "Silvan S. Batistella",
+  "icon": "images/icon.png",
+  "options": {
+    "query_debounce": 0.1
+  },
+  "preferences": [
+    {
+      "id": "tfa_kw",
+      "type": "keyword",
+      "name": "2FA",
+      "description": "Gerar Código autenticação 2FA",
+      "default_value": "2fa"
+    },
+    {
+      "id": "tfa_providers",
+      "type": "text",
+      "name": "Serviçõs",
+      "description": "Registros chave=valor separados por ponto e virgula (;): <chave1>=<valor1>;<chave2>=<valor2>"
+    },
+    {
+      "id": "tfa_max_providers",
+      "type": "text",
+      "name": "Número de Providers",
+      "description": "Número de serviços exibidos",
+      "default_value": "6"
+    }
+  ]
+}
