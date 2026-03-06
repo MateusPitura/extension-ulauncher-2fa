@@ -43,6 +43,12 @@ class KeywordQueryEventListener(EventListener):
             if query and not name.lower().startswith(query):
                 continue
 
+            # Acrescenta o símbolo = no fim para garantir que ele tenha o comprimento correto para o base32
+            missing_padding = len(secret) % 8
+            if missing_padding:
+                paddings_to_add = '=' * (8 - missing_padding)
+                secret += paddings_to_add
+
             # Pega a primeira palavra do nome para buscar o ícone
             first_word = name.split()[0].lower()
             custom_icon_path = os.path.join(images_path, f'{first_word}.png')
