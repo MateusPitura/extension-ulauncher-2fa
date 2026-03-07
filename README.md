@@ -23,6 +23,8 @@ This extension allows users to generate 2FA authentication codes directly from U
 
 🔎 **Search by service name:** filter services by name
 
+⬆️ **Sort by recently used:** sort services by recently used
+
 🖼️ **Custom service icons:** customize service icons
 
 ## How to Run
@@ -35,6 +37,7 @@ This extension allows users to generate 2FA authentication codes directly from U
 
 <p align="left">
 	<img src="https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54" alt="Python"/>
+  <img src="https://img.shields.io/badge/sqlite-%2307405e.svg?style=for-the-badge&logo=sqlite&logoColor=white" alt="SQLite"/>
 </p> 
 
 ## Authors 
