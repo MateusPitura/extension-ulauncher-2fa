@@ -2,6 +2,7 @@ import os
 import time
 import onetimepass as otp
 import shutil
+import sqlite3
 
 from ulauncher.api.client.Extension import Extension
 from ulauncher.api.client.EventListener import EventListener
@@ -16,11 +17,13 @@ class TfaExtension(Extension):
     def __init__(self):
         super(TfaExtension, self).__init__()
         self.subscribe(KeywordQueryEvent, KeywordQueryEventListener())
+        print(f"🌠 init")
 
 
 class KeywordQueryEventListener(EventListener):
 
     def on_event(self, event, extension):
+        print(f"🌠 on_event")
         items = []
         query = event.get_argument()
         if query:
@@ -93,3 +96,4 @@ class KeywordQueryEventListener(EventListener):
 
 if __name__ == '__main__':
     TfaExtension().run()
+    print(f"🌠 run")
