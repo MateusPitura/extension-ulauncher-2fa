@@ -115,14 +115,14 @@ class KeywordQueryEventListener(EventListener):
                 icon=icon_path,
                 name=f'{name}',
                 description=f'Expires in {remaining}s',
-                on_enter=ExtensionCustomAction(
-                    {
-                        "action": "update_last_used",
-                        "token": token,
-                        "name": name,
-                    }, 
-                    keep_app_open=False
-                ),
+                # on_enter=ExtensionCustomAction(
+                #     {
+                #         "action": "update_last_used",
+                #         "token": token,
+                #         "name": name,
+                #     }, 
+                #     keep_app_open=False
+                # ),
                 on_alt_enter=CopyToClipboardAction(token)
             )
             matching_items.append(item)
