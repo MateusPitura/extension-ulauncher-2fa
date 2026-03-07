@@ -35,7 +35,7 @@ class KeywordQueryEventListener(EventListener):
 
         # Absolute path to the extension's images folder
         basename = os.path.basename(os.path.dirname(__file__))
-        custom_images_path = f'~/.config/ulauncher/{basename}/images'
+        custom_images_path = os.path.expanduser(f'~/.config/ulauncher/{myFolder}/images')
 
         if not os.path.exists(custom_images_path):
             default_images_path = os.path.join(os.path.dirname(__file__), 'images')
@@ -57,7 +57,7 @@ class KeywordQueryEventListener(EventListener):
 
             # Get the first word of the name to look for the icon
             first_word = name.split()[0].lower()
-            custom_icon_path = os.path.join(images_path, f'{first_word}.png')
+            custom_icon_path = os.path.join(custom_images_path, f'{first_word}.png')
 
             # Check if the custom icon exists, if not, use the default icon
             if os.path.isfile(custom_icon_path):
