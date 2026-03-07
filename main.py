@@ -35,7 +35,7 @@ class KeywordQueryEventListener(EventListener):
 
         # Absolute path to the extension's images folder
         basename = os.path.basename(os.path.dirname(__file__))
-        custom_images_path = os.path.expanduser(f'~/.config/ulauncher/{myFolder}/images')
+        custom_images_path = os.path.expanduser(f'~/.config/ulauncher/{basename}/images')
 
         if not os.path.exists(custom_images_path):
             default_images_path = os.path.join(os.path.dirname(__file__), 'images')
