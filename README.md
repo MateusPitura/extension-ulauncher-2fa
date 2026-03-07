@@ -1,10 +1,7 @@
 <h1 align="center"> 
-  <p>2FA for Ulauncher</p> 
+  <p>2FA for Ulauncher</p>
+	<img src="https://github.com/user-attachments/assets/a207877b-45b1-476f-9ff1-c2c28223d45b" width="50%"/> 
 </h1> 
-
-<p align="center"> 
-  <img src="link do gif ou vídeo" width="25%"> 
-</p> 
 
 <p> 
   <img src="https://img.shields.io/badge/Release-Mar%202026-green">  
