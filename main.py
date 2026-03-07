@@ -40,7 +40,7 @@ class KeywordQueryEventListener(EventListener):
                 continue
             name, secret = map(str.strip, provider.split('=', 1))
 
-            if query and not name.lower().startswith(query):
+            if query and query not in name.lower():
                 continue
 
             # Acrescenta o símbolo = no fim para garantir que ele tenha o comprimento correto para o base32
