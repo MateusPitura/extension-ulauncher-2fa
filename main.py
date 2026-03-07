@@ -32,8 +32,8 @@ class KeywordQueryEventListener(EventListener):
 
         matching_items = []
 
-        # Absolute path to the extension's images folder
-        images_path = os.path.join(os.path.dirname(__file__), 'images')
+        print(f"🌠 extension.get_id(): {extension.get_id()}")
+        images_path = f'~/.config/ulauncher/{extension.get_id()}/images'
 
         for provider in providers:
             if '=' not in provider:
