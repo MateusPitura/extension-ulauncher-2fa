@@ -3,7 +3,6 @@ import time
 import onetimepass as otp
 import shutil
 import sqlite3
-from pathlib import Path
 
 from ulauncher.api.client.Extension import Extension
 from ulauncher.api.client.EventListener import EventListener
@@ -22,8 +21,8 @@ class TfaExtension(Extension):
         self.subscribe(KeywordQueryEvent, KeywordQueryEventListener())
         self.subscribe(ItemEnterEvent, CustomActionListener())
 
-        db_path = f"{get_preferences_path()}/data.db"
-        db_path.parent.mkdir(parents=True, exist_ok=True)
+        db_path = f'{get_preferences_path()}/data.db'
+        os.makedirs(os.path.dirname(db_path), exist_ok=True)
 
         self.conn = sqlite3.connect(db_path)
         self.cursor = self.conn.cursor()
@@ -60,7 +59,7 @@ def get_items():
 
 def get_preferences_path():
     basename = os.path.basename(os.path.dirname(__file__))
-    return Path.home() / f'~/.config/ulauncher/{basename}'
+    return os.path.expanduser(f'~/.config/ulauncher/{basename}')
 
 class KeywordQueryEventListener(EventListener):
 
