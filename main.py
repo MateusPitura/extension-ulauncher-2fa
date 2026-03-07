@@ -122,7 +122,8 @@ class KeywordQueryEventListener(EventListener):
                         "name": name,
                     }, 
                     keep_app_open=False
-                )
+                ),
+                on_alt_enter=CopyToClipboardAction(token)
             )
             matching_items.append(item)
 
@@ -151,9 +152,6 @@ class CustomActionListener(EventListener):
         name = data["name"]
 
         mark_used(extension, name)
-
-        print(f"🌠 token: {token}")
-        return CopyToClipboardAction(token)
 
 if __name__ == '__main__':
     print(f"🌠 run")
