@@ -10,6 +10,8 @@ from ulauncher.api.shared.event import KeywordQueryEvent
 from ulauncher.api.shared.item.ExtensionResultItem import ExtensionResultItem
 from ulauncher.api.shared.action.RenderResultListAction import RenderResultListAction
 from ulauncher.api.shared.action.CopyToClipboardAction import CopyToClipboardAction
+from ulauncher.api.shared.event import ItemEnterEvent
+from ulauncher.api.shared.action.ExtensionCustomAction import ExtensionCustomAction
 
 
 class TfaExtension(Extension):
@@ -17,8 +19,47 @@ class TfaExtension(Extension):
     def __init__(self):
         super(TfaExtension, self).__init__()
         self.subscribe(KeywordQueryEvent, KeywordQueryEventListener())
+        self.subscribe(ItemEnterEvent, CustomActionListener())
+
+        db_path = f"{get_preferences_path()}/data.db"
+        db_path.parent.mkdir(parents=True, exist_ok=True)
+
+        self.conn = sqlite3.connect(db_path)
+        self.cursor = self.conn.cursor()
+
+        self.cursor.execute("""
+        CREATE TABLE IF NOT EXISTS services (
+            name TEXT PRIMARY KEY,
+            last_used INTEGER
+        )
+        """)
+
+        self.conn.commit()
+
         print(f"🌠 init")
 
+def mark_used(name):
+    cursor.execute("""
+        INSERT INTO services (name, last_used)
+        VALUES (?, ?)
+        ON CONFLICT(name)
+        DO UPDATE SET last_used=excluded.last_used
+    """, (name, int(time.time())))
+    
+    conn.commit()
+
+def get_items():
+    cursor.execute("""
+        SELECT name
+        FROM services
+        ORDER BY last_used DESC
+    """)
+    
+    return [row[0] for row in cursor.fetchall()]
+
+def get_preferences_path():
+    basename = os.path.basename(os.path.dirname(__file__))
+    return os.path.expanduser(f'~/.config/ulauncher/{basename}')
 
 class KeywordQueryEventListener(EventListener):
 
@@ -37,8 +78,7 @@ class KeywordQueryEventListener(EventListener):
         matching_items = []
 
         # Absolute path to the extension's images folder
-        basename = os.path.basename(os.path.dirname(__file__))
-        custom_images_path = os.path.expanduser(f'~/.config/ulauncher/{basename}/images')
+        custom_images_path = f"{get_preferences_path()}/images"
 
         if not os.path.exists(custom_images_path):
             default_images_path = os.path.join(os.path.dirname(__file__), 'images')
@@ -74,9 +114,12 @@ class KeywordQueryEventListener(EventListener):
             item = ExtensionResultItem(
                 icon=icon_path,
                 name=f'{name}',
-                # description=f'(expira em {remaining}s)',
                 description=f'Expires in {remaining}s',
-                on_enter=CopyToClipboardAction(token)
+                on_enter=ExtensionCustomAction({
+                    "action": "update_last_used",
+                    "token": token,
+                    "name": name,
+                }, keep_app_open=False)
             )
             matching_items.append(item)
 
@@ -93,7 +136,21 @@ class KeywordQueryEventListener(EventListener):
 
         return RenderResultListAction(items)
 
+class CustomActionListener(EventListener):
+
+    def on_event(self, event, extension):
+        data = event.get_data()
+
+        if data.get("action") != "update_last_used":
+            return
+
+        token = data["token"]
+        name = data["name"]
+
+        mark_used(name)
+
+        return CopyToClipboardAction(token)
 
 if __name__ == '__main__':
-    TfaExtension().run()
     print(f"🌠 run")
+    TfaExtension().run()
