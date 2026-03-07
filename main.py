@@ -127,8 +127,17 @@ class KeywordQueryEventListener(EventListener):
             )
             matching_items.append(item)
 
-        if len(matching_items) > max_items:
-            items.extend(matching_items[:max_items - 1])
+        # Order by last_used from DB (most recent first); unknown ones go to the end, then by name
+        usage_order = {n: idx for idx, n in enumerate(get_items(extension))}
+        matching_items.sort(
+            key=lambda pair: (usage_order.get(pair[0], float('inf')), pair[0].lower())
+        )
+
+        # Drop names, keep only items
+        ordered_items = [item for _, item in matching_items]
+
+        if len(ordered_items) > max_items:
+            items.extend(ordered_items[:max_items - 1])
             items.append(ExtensionResultItem(
                 icon='images/icon.png',
                 name='[...]',
@@ -136,7 +145,7 @@ class KeywordQueryEventListener(EventListener):
                 on_enter=None
             ))
         else:
-            items.extend(matching_items)
+            items.extend(ordered_items)
 
         return RenderResultListAction(items)
 
