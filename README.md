@@ -1,95 +1,48 @@
-# 🔐 2FA for Ulauncher
-Uma extensão para o Ulauncher que permite gerar códigos de autenticação 2FA (Two-Factor Authentication) para múltiplos serviços diretamente pelo launcher, facilitando o acesso rápido aos tokens temporários.
-<br>
-<br>
+<h1 align="center"> 
+  <p>2FA for Ulauncher</p> 
+</h1> 
 
-## ✨ Funcionalidades
-🔢 Geração automática de códigos 2FA (TOTP) para serviços configurados.
+<p> 
+  <img src="https://img.shields.io/badge/Release-Mar%202026-green">  
+  <img src="https://img.shields.io/github/stars/MateusPitura/extension-ulauncher-2fa?style=social"> 
+</p>  
 
-📋 Copia o código para a área de transferência ao selecionar.
+## Description
 
-⚙️ Configuração flexível dos serviços via preferências (chave=valor).
+This is a 2FA (Two-Factor Authentication) extension for Ulauncher. This extension allows users to generate 2FA authentication codes directly from Ulauncher, providing a convenient and efficient way to access their accounts securely
 
-🔎 Filtro por nome do serviço digitando após a palavra-chave.
+- [Features](#features)
+- [How to Run](#how-to-run)
+- [Technologies Used](#technologies-used)
+- [Authors](#authors)
 
-🖼️ Ícones customizados para serviços (opcional), ou ícone padrão.
+## Features 
 
-🔢 Limite configurável para o número de serviços exibidos.
-<br>
-<br>
+📋 **Copy code to clipboard:** copies authentication codes to your clipboard
 
-## 🚀 Instalação
-### 1.✅ Instalação Automática via Ulauncher
-1.1. Abra o Ulauncher e digite ext, depois pressione Enter.
+🔎 **Search by service name:** filter services by name
 
-1.2. A página de extensões será aberta no navegador.
+🖼️ **Custom service icons:** customize service icons
 
-1.3. Clique em "Add Extension".
+<p align="center"> 
+  <img src="link do gif ou vídeo" width="25%"> 
+</p> 
 
-1.4. Cole o link abaixo e clique em Add:
+## How to Run
 
-**👉 (adicione aqui o link do seu repositório no GitHub)**
+1. In [Ulauncher](https://ulauncher.io/) app settings add an extension with the link [https://github.com/MateusPitura/extension-ulauncher-2fa](https://github.com/MateusPitura/extension-ulauncher-2fa)
 
-### 2. 📦 Instale as dependências Python (necessário)
-O Ulauncher não instala automaticamente as bibliotecas Python usadas pela extensão. Você precisa fazer isso uma vez após a instalação:
+## Technologies Used
 
-2.1. Encontre o caminho da extensão:
-```bash
-find ~/.local/share/ulauncher/extensions/ -name requirements.txt
-```
-O caminho retornado será algo como:
-```bash
-~/.local/share/ulauncher/extensions/com.github.silvan-batistella.2fa-ulauncher-ext/requirements.txt
-```
-2.2. Instale os pacotes Python:
-```bash
-pip install --user -r /CAMINHO/requirements.txt
-```
-Ou, se estiver usando pip3:
-```bash
-pip3 install --user -r /CAMINHO/requirements.txt
-```
-<br>
-<br>
+<!-- Link for badges: https://github.com/Ileriayo/markdown-badges -->
 
-## 🧪 Como usar
-Abra o Ulauncher (Ctrl + Space) e digite sua palavra-chave configurada (padrão: 2fa), seguida do nome (ou parte dele) do serviço desejado para filtrar a lista.
+<p align="left">
+	<img src="https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54" alt="Python"/>
+</p> 
 
-Exemplos:
-```bash
-2fa google
-2fa github
-```
+## Authors 
 
-A lista exibirá os serviços configurados correspondentes, com seus códigos 2FA atuais e o tempo restante para expiração. Ao selecionar um serviço, o código será copiado automaticamente para a área de transferência.
-<br>
-<br>
-
-## 🖼️ Ícones personalizados para serviços
-A extensão suporta ícones personalizados para cada serviço, buscando um arquivo PNG na pasta images da extensão.
-
-O nome do arquivo deve ser a primeira palavra do nome do serviço, em letras minúsculas, seguido de .png.
-Por exemplo, para o serviço Google Account, o arquivo deve ser google.png.
-
-Caso o ícone personalizado não seja encontrado, a extensão usa o ícone padrão (images/icon.png).
-
-Para adicionar seus próprios ícones, basta colocar os arquivos PNG na pasta images da extensão com o nome correto.
-<br>
-<br>
-
-## ⚙️ Configurações personalizadas
-Configure via preferências da extensão no Ulauncher:
-
-|Configuração|Função|Padrão|
-|------------|------|------|
-|Palavra-chave (Keyword)|Atalho para ativar a extensão|2fa|
-|Serviços (Providers)|Registros no formato chave=valor separados por ; (ex: google=SECRET;github=SECRET)|(vazio)|
-|Número máximo|Quantidade máxima de serviços exibidos|6|
-
-<br>
-<br>
-
-### 📄 Licença
-
-MIT © 2025  
-[Silvan S. Batistella](https://github.com/silvan-batistella)
+| Mateus Pitura | 
+|------|
+| <p align="center"><img src="https://avatars.githubusercontent.com/u/119008106" width="100" height="100"></p> |  
+| <a href="https://www.linkedin.com/in/mateuspitura/"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&goColor=white"> |

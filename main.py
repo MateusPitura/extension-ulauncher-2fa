@@ -32,7 +32,7 @@ class KeywordQueryEventListener(EventListener):
 
         matching_items = []
 
-        # Caminho absoluto da pasta images da extensão
+        # Absolute path to the extension's images folder
         images_path = os.path.join(os.path.dirname(__file__), 'images')
 
         for provider in providers:
@@ -43,17 +43,17 @@ class KeywordQueryEventListener(EventListener):
             if query and query not in name.lower():
                 continue
 
-            # Acrescenta o símbolo = no fim para garantir que ele tenha o comprimento correto para o base32
+            # Add the symbol = at the end to ensure it has the correct length for base32
             missing_padding = len(secret) % 8
             if missing_padding:
                 paddings_to_add = '=' * (8 - missing_padding)
                 secret += paddings_to_add
 
-            # Pega a primeira palavra do nome para buscar o ícone
+            # Get the first word of the name to look for the icon
             first_word = name.split()[0].lower()
             custom_icon_path = os.path.join(images_path, f'{first_word}.png')
 
-            # Verifica se o arquivo existe, se não, usa o padrão
+            # Check if the custom icon exists, if not, use the default icon
             if os.path.isfile(custom_icon_path):
                 icon_path = custom_icon_path
             else:
@@ -65,7 +65,8 @@ class KeywordQueryEventListener(EventListener):
             item = ExtensionResultItem(
                 icon=icon_path,
                 name=f'{name}',
-                description=f'(expira em {remaining}s)',
+                # description=f'(expira em {remaining}s)',
+                description=f'Expires in {remaining}s',
                 on_enter=CopyToClipboardAction(token)
             )
             matching_items.append(item)
@@ -75,7 +76,7 @@ class KeywordQueryEventListener(EventListener):
             items.append(ExtensionResultItem(
                 icon='images/icon.png',
                 name='[...]',
-                description='Mais serviços disponíveis',
+                description='More services available',
                 on_enter=None
             ))
         else:
