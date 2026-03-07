@@ -122,14 +122,13 @@ class KeywordQueryEventListener(EventListener):
                     keep_app_open=False
                 ),
             )
-            matching_items.append(item)
+            matching_items.append((name, item))
 
         # Order by last_used from DB (most recent first); unknown ones go to the end, then by name
         usage_order = {n: idx for idx, n in enumerate(get_items(extension))}
-        print(f"🌠 usage_order: {usage_order}")
-        print(f"🌠 matching_items: {matching_items}")
+
         matching_items.sort(
-            key=lambda item: (usage_order.get(item.name, float('inf')), item.name.lower())
+            key=lambda pair: (usage_order.get(pair[0], float('inf')), pair[0].lower())
         )
 
         # Drop names, keep only items
