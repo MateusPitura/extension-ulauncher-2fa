@@ -3,6 +3,7 @@ import time
 import onetimepass as otp
 import shutil
 import sqlite3
+from pathlib import Path
 
 from ulauncher.api.client.Extension import Extension
 from ulauncher.api.client.EventListener import EventListener
@@ -59,7 +60,7 @@ def get_items():
 
 def get_preferences_path():
     basename = os.path.basename(os.path.dirname(__file__))
-    return os.path.expanduser(f'~/.config/ulauncher/{basename}')
+    return Path.home() / f'~/.config/ulauncher/{basename}'
 
 class KeywordQueryEventListener(EventListener):
 
