@@ -38,24 +38,24 @@ class TfaExtension(Extension):
 
         print(f"🌠 init")
 
-def mark_used(name):
-    cursor.execute("""
+def mark_used(extension, name):
+    extension.cursor.execute("""
         INSERT INTO services (name, last_used)
         VALUES (?, ?)
         ON CONFLICT(name)
         DO UPDATE SET last_used=excluded.last_used
     """, (name, int(time.time())))
     
-    conn.commit()
+    extension.conn.commit()
 
-def get_items():
-    cursor.execute("""
+def get_items(extension):
+    extension.cursor.execute("""
         SELECT name
         FROM services
         ORDER BY last_used DESC
     """)
     
-    return [row[0] for row in cursor.fetchall()]
+    return [row[0] for row in extension.cursor.fetchall()]
 
 def get_preferences_path():
     basename = os.path.basename(os.path.dirname(__file__))
@@ -147,7 +147,7 @@ class CustomActionListener(EventListener):
         token = data["token"]
         name = data["name"]
 
-        mark_used(name)
+        mark_used(extension, name)
 
         return CopyToClipboardAction(token)
 
