@@ -1,6 +1,7 @@
 import os
 import time
 import onetimepass as otp
+import shutil
 
 from ulauncher.api.client.Extension import Extension
 from ulauncher.api.client.EventListener import EventListener
@@ -32,8 +33,13 @@ class KeywordQueryEventListener(EventListener):
 
         matching_items = []
 
-        print(f"🌠 extension.get_id(): {extension.get_id()}")
-        images_path = f'~/.config/ulauncher/{extension.get_id()}/images'
+        # Absolute path to the extension's images folder
+        basename = os.path.basename(os.path.dirname(__file__))
+        custom_images_path = f'~/.config/ulauncher/{basename}/images'
+
+        if not os.path.exists(custom_images_path):
+            default_images_path = os.path.join(os.path.dirname(__file__), 'images')
+            shutil.copytree(default_images_path, custom_images_path)
 
         for provider in providers:
             if '=' not in provider:
