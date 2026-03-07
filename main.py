@@ -115,11 +115,14 @@ class KeywordQueryEventListener(EventListener):
                 icon=icon_path,
                 name=f'{name}',
                 description=f'Expires in {remaining}s',
-                on_enter=ExtensionCustomAction({
-                    "action": "update_last_used",
-                    "token": token,
-                    "name": name,
-                }, keep_app_open=False)
+                on_enter=ExtensionCustomAction(
+                    {
+                        "action": "update_last_used",
+                        "token": token,
+                        "name": name,
+                    }, 
+                    keep_app_open=False
+                )
             )
             matching_items.append(item)
 
@@ -149,6 +152,7 @@ class CustomActionListener(EventListener):
 
         mark_used(extension, name)
 
+        print(f"🌠 token: {token}")
         return CopyToClipboardAction(token)
 
 if __name__ == '__main__':
