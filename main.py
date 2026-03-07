@@ -3,6 +3,7 @@ import time
 import onetimepass as otp
 import shutil
 import sqlite3
+import subprocess
 
 from ulauncher.api.client.Extension import Extension
 from ulauncher.api.client.EventListener import EventListener
@@ -115,15 +116,14 @@ class KeywordQueryEventListener(EventListener):
                 icon=icon_path,
                 name=f'{name}',
                 description=f'Expires in {remaining}s',
-                # on_enter=ExtensionCustomAction(
-                #     {
-                #         "action": "update_last_used",
-                #         "token": token,
-                #         "name": name,
-                #     }, 
-                #     keep_app_open=False
-                # ),
-                on_alt_enter=CopyToClipboardAction(token)
+                on_enter=ExtensionCustomAction(
+                    {
+                        "action": "update_last_used",
+                        "token": token,
+                        "name": name,
+                    }, 
+                    keep_app_open=False
+                ),
             )
             matching_items.append(item)
 
@@ -152,6 +152,8 @@ class CustomActionListener(EventListener):
         name = data["name"]
 
         mark_used(extension, name)
+
+        subprocess.run(["xclip", "-selection", "clipboard"], input=token.encode())
 
 if __name__ == '__main__':
     print(f"🌠 run")
