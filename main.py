@@ -37,8 +37,6 @@ class TfaExtension(Extension):
 
         self.conn.commit()
 
-        print(f"🌠 init")
-
 def mark_used(extension, name):
     extension.cursor.execute("""
         INSERT INTO services (name, last_used)
@@ -65,7 +63,6 @@ def get_preferences_path():
 class KeywordQueryEventListener(EventListener):
 
     def on_event(self, event, extension):
-        print(f"🌠 on_event")
         items = []
         query = event.get_argument()
         if query:
@@ -129,8 +126,10 @@ class KeywordQueryEventListener(EventListener):
 
         # Order by last_used from DB (most recent first); unknown ones go to the end, then by name
         usage_order = {n: idx for idx, n in enumerate(get_items(extension))}
+        print(f"🌠 usage_order: {usage_order}")
+        print(f"🌠 matching_items: {matching_items}")
         matching_items.sort(
-            key=lambda pair: (usage_order.get(pair[0], float('inf')), pair[0].lower())
+            key=lambda item: (usage_order.get(item.name, float('inf')), item.name.lower())
         )
 
         # Drop names, keep only items
@@ -165,5 +164,4 @@ class CustomActionListener(EventListener):
         subprocess.run(["xclip", "-selection", "clipboard"], input=token.encode())
 
 if __name__ == '__main__':
-    print(f"🌠 run")
     TfaExtension().run()
