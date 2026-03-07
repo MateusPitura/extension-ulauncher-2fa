@@ -2,6 +2,10 @@
   <p>2FA for Ulauncher</p> 
 </h1> 
 
+<p align="center"> 
+  <img src="link do gif ou vídeo" width="25%"> 
+</p> 
+
 <p> 
   <img src="https://img.shields.io/badge/Release-Mar%202026-green">  
   <img src="https://img.shields.io/github/stars/MateusPitura/extension-ulauncher-2fa?style=social"> 
@@ -9,7 +13,7 @@
 
 ## Description
 
-This is a 2FA (Two-Factor Authentication) extension for Ulauncher. This extension allows users to generate 2FA authentication codes directly from Ulauncher, providing a convenient and efficient way to access their accounts securely
+This extension allows users to generate 2FA authentication codes directly from Ulauncher, providing a convenient and efficient way to access their accounts securely
 
 - [Features](#features)
 - [How to Run](#how-to-run)
@@ -23,10 +27,6 @@ This is a 2FA (Two-Factor Authentication) extension for Ulauncher. This extensio
 🔎 **Search by service name:** filter services by name
 
 🖼️ **Custom service icons:** customize service icons
-
-<p align="center"> 
-  <img src="link do gif ou vídeo" width="25%"> 
-</p> 
 
 ## How to Run
 
