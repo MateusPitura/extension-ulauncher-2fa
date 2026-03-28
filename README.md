@@ -29,7 +29,7 @@ This extension allows users to generate 2FA authentication codes directly from U
 
 ## How to Run
 
-1. In [Ulauncher](https://ulauncher.io/) app settings add an extension with the link [https://github.com/MateusPitura/extension-ulauncher-2fa](https://github.com/MateusPitura/extension-ulauncher-2fa)
+1. In Ulauncher app settings add an extension with the link https://github.com/MateusPitura/extension-ulauncher-2fa
 
 ## Technologies Used
 
