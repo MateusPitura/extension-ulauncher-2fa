@@ -10,7 +10,6 @@ from ulauncher.api.client.EventListener import EventListener
 from ulauncher.api.shared.event import KeywordQueryEvent
 from ulauncher.api.shared.item.ExtensionResultItem import ExtensionResultItem
 from ulauncher.api.shared.action.RenderResultListAction import RenderResultListAction
-from ulauncher.api.shared.action.CopyToClipboardAction import CopyToClipboardAction
 from ulauncher.api.shared.event import ItemEnterEvent
 from ulauncher.api.shared.action.ExtensionCustomAction import ExtensionCustomAction
 
@@ -37,6 +36,7 @@ class TfaExtension(Extension):
 
         self.conn.commit()
 
+
 def mark_used(extension, name):
     extension.cursor.execute("""
         INSERT INTO services (name, last_used)
@@ -44,8 +44,9 @@ def mark_used(extension, name):
         ON CONFLICT(name)
         DO UPDATE SET last_used=excluded.last_used
     """, (name, int(time.time())))
-    
+
     extension.conn.commit()
+
 
 def get_items(extension):
     extension.cursor.execute("""
@@ -53,12 +54,14 @@ def get_items(extension):
         FROM services
         ORDER BY last_used DESC
     """)
-    
+
     return [row[0] for row in extension.cursor.fetchall()]
+
 
 def get_preferences_path():
     basename = os.path.basename(os.path.dirname(__file__))
     return os.path.expanduser(f'~/.config/ulauncher/{basename}')
+
 
 class KeywordQueryEventListener(EventListener):
 
@@ -79,7 +82,8 @@ class KeywordQueryEventListener(EventListener):
         custom_images_path = f"{get_preferences_path()}/images"
 
         if not os.path.exists(custom_images_path):
-            default_images_path = os.path.join(os.path.dirname(__file__), 'images')
+            default_images_path = os.path.join(
+                os.path.dirname(__file__), 'images')
             shutil.copytree(default_images_path, custom_images_path)
 
         for provider in providers:
@@ -98,7 +102,8 @@ class KeywordQueryEventListener(EventListener):
 
             # Get the first word of the name to look for the icon
             first_word = name.split()[0].lower()
-            custom_icon_path = os.path.join(custom_images_path, f'{first_word}.png')
+            custom_icon_path = os.path.join(
+                custom_images_path, f'{first_word}.png')
 
             # Check if the custom icon exists, if not, use the default icon
             if os.path.isfile(custom_icon_path):
@@ -118,7 +123,7 @@ class KeywordQueryEventListener(EventListener):
                         "action": "update_last_used",
                         "token": token,
                         "name": name,
-                    }, 
+                    },
                     keep_app_open=False
                 ),
             )
@@ -128,7 +133,8 @@ class KeywordQueryEventListener(EventListener):
         usage_order = {n: idx for idx, n in enumerate(get_items(extension))}
 
         matching_items.sort(
-            key=lambda pair: (usage_order.get(pair[0], float('inf')), pair[0].lower())
+            key=lambda pair: (usage_order.get(
+                pair[0], float('inf')), pair[0].lower())
         )
 
         # Drop names, keep only items
@@ -147,6 +153,7 @@ class KeywordQueryEventListener(EventListener):
 
         return RenderResultListAction(items)
 
+
 class CustomActionListener(EventListener):
 
     def on_event(self, event, extension):
@@ -160,7 +167,9 @@ class CustomActionListener(EventListener):
 
         mark_used(extension, name)
 
-        subprocess.run(["xclip", "-selection", "clipboard"], input=token.encode())
+        subprocess.run(["xclip", "-selection", "clipboard"],
+                       input=token.encode())
+
 
 if __name__ == '__main__':
     TfaExtension().run()
