@@ -16,10 +16,24 @@
       "default_value": "2fa"
     },
     {
+      "id": "tfa_encrypt_kw",
+      "type": "keyword",
+      "name": "Encrypt Services",
+      "description": "Copy encrypted services using a password",
+      "default_value": "encrypt"
+    },
+    {
+      "id": "tfa_decrypt_kw",
+      "type": "keyword",
+      "name": "Decrypt Services",
+      "description": "Copy decrypted services using a password",
+      "default_value": "decrypt"
+    },
+    {
       "id": "tfa_providers",
       "type": "text",
       "name": "Services",
-      "description": "key=value records separated by semicolon (;): <key1>=<value1>;<key2>=<value2>"
+      "description": "Plain key=value records separated by semicolons, or an encrypted value produced by the encrypt command"
     },
     {
       "id": "tfa_max_providers",

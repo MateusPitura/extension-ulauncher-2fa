@@ -1,9 +1,16 @@
 import os
 import time
-import onetimepass as otp
+import base64
+import binascii
 import shutil
+import onetimepass as otp
 import sqlite3
 import subprocess
+import secrets
+
+from cryptography.fernet import Fernet, InvalidToken
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 
 from ulauncher.api.client.Extension import Extension
 from ulauncher.api.client.EventListener import EventListener
@@ -12,6 +19,67 @@ from ulauncher.api.shared.item.ExtensionResultItem import ExtensionResultItem
 from ulauncher.api.shared.action.RenderResultListAction import RenderResultListAction
 from ulauncher.api.shared.event import ItemEnterEvent
 from ulauncher.api.shared.action.ExtensionCustomAction import ExtensionCustomAction
+
+ENCRYPTED_PREFIX = 'enc:v1:'
+
+
+def message(text):
+    return RenderResultListAction([ExtensionResultItem(
+        icon='images/icon.png', name=text, on_enter=None
+    )])
+
+
+def error_message(error):
+    if isinstance(error, InvalidToken):
+        return 'Wrong password or encrypted services were modified'
+    if isinstance(error, (OSError, subprocess.SubprocessError)):
+        return 'Could not open the password dialog or access the clipboard'
+    return str(error)
+
+
+def prompt_for_password(title):
+    result = subprocess.run(
+        ['zenity', '--password', '--title', title],
+        capture_output=True, text=True, check=False
+    )
+    if result.returncode != 0:
+        return None
+    password = result.stdout.rstrip('\n')
+    if not password:
+        raise ValueError('Password cannot be empty')
+    return password
+
+
+def derive_fernet(password, salt):
+    key = PBKDF2HMAC(
+        algorithm=hashes.SHA256(), length=32, salt=salt, iterations=600_000
+    ).derive(password.encode('utf-8'))
+    return Fernet(base64.urlsafe_b64encode(key))
+
+
+def encrypt_services(services, password):
+    salt = secrets.token_bytes(16)
+    token = derive_fernet(password, salt).encrypt(services.encode('utf-8'))
+    envelope = base64.urlsafe_b64encode(salt + token).decode('ascii')
+    return ENCRYPTED_PREFIX + envelope
+
+
+def decrypt_services(value, password):
+    try:
+        envelope = base64.b64decode(
+            value[len(ENCRYPTED_PREFIX):], altchars=b'-_', validate=True
+        )
+    except (ValueError, binascii.Error) as error:
+        raise ValueError('Encrypted Services value is malformed') from error
+    if len(envelope) <= 16:
+        raise ValueError('Encrypted Services value is malformed')
+    salt, token = envelope[:16], envelope[16:]
+    return derive_fernet(password, salt).decrypt(token).decode('utf-8')
+
+
+def copy_to_clipboard(value):
+    subprocess.run(['xclip', '-selection', 'clipboard'], input=value.encode(),
+                   check=True)
 
 
 class TfaExtension(Extension):
@@ -66,12 +134,24 @@ def get_preferences_path():
 class KeywordQueryEventListener(EventListener):
 
     def on_event(self, event, extension):
-        items = []
-        query = event.get_argument()
-        if query:
-            query = query.strip().lower()
+        keyword = event.get_keyword()
+        if keyword == extension.preferences.get('tfa_encrypt_kw', 'encrypt'):
+            return self.convert_services(extension, encrypt=True)
+        if keyword == extension.preferences.get('tfa_decrypt_kw', 'decrypt'):
+            return self.convert_services(extension, encrypt=False)
 
+        query = (event.get_argument() or '').strip()
+        query_lower = query.lower()
         providers_raw = extension.preferences.get('tfa_providers', '')
+        try:
+            if providers_raw.startswith(ENCRYPTED_PREFIX):
+                password = prompt_for_password('Unlock 2FA services')
+                if password is None:
+                    return message('Password entry cancelled')
+                providers_raw = decrypt_services(providers_raw, password)
+        except (ValueError, InvalidToken, OSError, subprocess.SubprocessError) as error:
+            return message(error_message(error))
+
         providers = providers_raw.split(';')
 
         max_items = int(extension.preferences.get('tfa_max_providers') or 7)
@@ -91,7 +171,7 @@ class KeywordQueryEventListener(EventListener):
                 continue
             name, secret = map(str.strip, provider.split('=', 1))
 
-            if query and query not in name.lower():
+            if query_lower and query_lower not in name.lower():
                 continue
 
             # Add the symbol = at the end to ensure it has the correct length for base32
@@ -153,6 +233,30 @@ class KeywordQueryEventListener(EventListener):
 
         return RenderResultListAction(items)
 
+    def convert_services(self, extension, encrypt):
+        providers_raw = extension.preferences.get('tfa_providers', '')
+        if not providers_raw.strip():
+            return message('Services setting is empty')
+
+        if encrypt == providers_raw.startswith(ENCRYPTED_PREFIX):
+            state = 'already encrypted' if encrypt else 'already plain text'
+            return message(f'Services are {state}')
+
+        try:
+            password = prompt_for_password(
+                'Encrypt services' if encrypt else 'Decrypt services')
+            if password is None:
+                return message('Password entry cancelled')
+            converted = (encrypt_services(providers_raw, password) if encrypt
+                         else decrypt_services(providers_raw, password))
+            copy_to_clipboard(converted)
+        except (ValueError, InvalidToken, OSError, subprocess.SubprocessError) as error:
+            return message(f'Could not convert services: {error_message(error)}')
+
+        action = 'Encrypted' if encrypt else 'Decrypted'
+        return message(
+            f'{action} services copied. Paste the result into the Services setting.')
+
 
 class CustomActionListener(EventListener):
 
@@ -167,8 +271,7 @@ class CustomActionListener(EventListener):
 
         mark_used(extension, name)
 
-        subprocess.run(["xclip", "-selection", "clipboard"],
-                       input=token.encode())
+        copy_to_clipboard(token)
 
 
 if __name__ == '__main__':
