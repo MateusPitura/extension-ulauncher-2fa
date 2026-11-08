@@ -31,6 +31,10 @@ This extension allows users to generate 2FA authentication codes directly from U
 
 1. In Ulauncher app settings add an extension with the link https://github.com/MateusPitura/extension-ulauncher-2fa
 
+2. Setting up the services:
+- Google Authenticator > Transfer Codes > Export codes > Select Codes > Take a screenshot and save it to `qrcode/images/`
+- In `qrcode/` run `python3 -m venv ven` > `source venv/bin/activate` > `pip install -r requirements.txt` > `python3 decode.py ./images/screenshot.png --json` > Copy the secret and use it to configure the service
+
 ## Technologies Used
 
 <!-- Link for badges: https://github.com/Ileriayo/markdown-badges -->
