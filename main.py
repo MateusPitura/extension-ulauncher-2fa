@@ -21,6 +21,7 @@ from ulauncher.api.shared.event import ItemEnterEvent
 from ulauncher.api.shared.action.ExtensionCustomAction import ExtensionCustomAction
 
 ENCRYPTED_PREFIX = 'enc:v1:'
+PASSWORD_CACHE_SECONDS = 60
 
 
 def message(text):
@@ -103,6 +104,8 @@ class TfaExtension(Extension):
         """)
 
         self.conn.commit()
+        self._session_password = None
+        self._session_password_at = 0
 
 
 def mark_used(extension, name):
@@ -145,10 +148,18 @@ class KeywordQueryEventListener(EventListener):
         providers_raw = extension.preferences.get('tfa_providers', '')
         try:
             if providers_raw.startswith(ENCRYPTED_PREFIX):
-                password = prompt_for_password('Unlock 2FA services')
+                password = self.get_session_password(extension)
                 if password is None:
                     return message('Password entry cancelled')
-                providers_raw = decrypt_services(providers_raw, password)
+                try:
+                    providers_raw = decrypt_services(providers_raw, password)
+                except InvalidToken:
+                    password = prompt_for_password('Unlock 2FA services')
+                    if password is None:
+                        return message('Password entry cancelled')
+                    providers_raw = decrypt_services(providers_raw, password)
+                    extension._session_password = password
+                extension._session_password_at = time.time()
         except (ValueError, InvalidToken, OSError, subprocess.SubprocessError) as error:
             return message(error_message(error))
 
@@ -232,6 +243,14 @@ class KeywordQueryEventListener(EventListener):
             items.extend(ordered_items)
 
         return RenderResultListAction(items)
+
+    @staticmethod
+    def get_session_password(extension):
+        if (extension._session_password and
+                time.time() - extension._session_password_at < PASSWORD_CACHE_SECONDS):
+            return extension._session_password
+        extension._session_password = None
+        return prompt_for_password('Unlock 2FA services')
 
     def convert_services(self, extension, encrypt):
         providers_raw = extension.preferences.get('tfa_providers', '')
