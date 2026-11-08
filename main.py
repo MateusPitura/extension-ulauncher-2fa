@@ -137,6 +137,7 @@ def get_preferences_path():
 class KeywordQueryEventListener(EventListener):
 
     def on_event(self, event, extension):
+        items = []
         keyword = event.get_keyword()
         if keyword == extension.preferences.get('tfa_encrypt_kw', 'encrypt'):
             return self.convert_services(extension, encrypt=True)
@@ -158,7 +159,7 @@ class KeywordQueryEventListener(EventListener):
                     if password is None:
                         return message('Password entry cancelled')
                     providers_raw = decrypt_services(providers_raw, password)
-                    extension._session_password = password
+                extension._session_password = password
                 extension._session_password_at = time.time()
         except (ValueError, InvalidToken, OSError, subprocess.SubprocessError) as error:
             return message(error_message(error))
